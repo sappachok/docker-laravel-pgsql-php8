@@ -1,0 +1,55 @@
+version: "3.7"
+services: 
+  app:
+    image: sappachok/docker-laravel-pgsql
+    build: .
+    #container_name: 'laravelapp'
+    #ports:
+      #- 8080:80
+      #- 8000:8000
+      #- 9000:9000
+    working_dir: /var/www
+    volumes:
+      #- ./app:/var/www
+      - c://xampp3//htdocs//laravel//app:/var/www
+
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  #Nginx Service
+  nginx:
+    image: nginx:alpine
+    #container_name: webserver
+    restart: unless-stopped
+    tty: true
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - c://xampp3//htdocs//laravel//app:/var/www
+      - ./nginx/conf.d/:/etc/nginx/conf.d/
+    links:
+      - app
+    depends_on:
+      - app
+    networks:
+      - app-network
+   
+  #Oracle Database
+  #oracledb:
+    #image: epiclabs/docker-oracle-xe-11g
+    #container_name: oracledb
+    #restart: unless-stopped
+    #tty: true
+    #ports:
+      #- 15210:1521
+    #volumes:
+    #  - /var/yourdata:/u01/app/oracle
+    #networks:
+      #- app-network
+
+#Docker Networks
+networks:
+  app-network:
+    driver: bridge
